@@ -1,0 +1,91 @@
+1. Actori (Roluri Utilizatori)
+Aplicația va avea două roluri principale și funcționalități de bază de autentificare:
+Utilizator Neautentificat:
+Poate vedea pagina principală.
+Se poate autentifica (Login).
+
+Student (autentificat):
+Poate vedea dashboard-ul său personal.
+Poate vedea lista profesorilor și sesiunile de înscriere active ale acestora.
+Poate trimite o cerere preliminară la o sesiune activă a unui profesor.
+Poate vedea statusul tuturor cererilor sale (trimisă, aprobată preliminar, respinsă, fișier încărcat, aprobată final, fișier respins).
+NU poate aplica la o altă sesiune dacă deja are o cerere aprobată preliminar (sau final).
+Dacă o cerere este aprobată preliminar, poate încărca un fișier (.pdf, .docx).
+Dacă o cerere este fișier respins poate încărca un nou fișier.
+
+Profesor (autentificat):
+Poate vedea dashboard-ul său personal
+O sesiune are: nume, dată start, dată stop, număr maxim de locuri
+Sesiunile unui profesor nu se pot suprapune în timp
+Poate vedea toate cererile primite la sesiunile sale
+Poate aproba preliminar o cerere (dacă nu s-a atins numărul maxim de locuri și dacă studentul nu are altă aprobare)
+Poate respinge o cerere (trebuie să adauge o justificare)
+Poate vedea fișierul încărcat de student (după aprobarea preliminară)
+Poate aproba final, încărcând  un fișier de răspuns
+
+Poate respinge fișierul cu justificare, pentru ca studentul să reîncarce.
+
+2. Modelul Bazei de Date
+User 
+id (PK, Auto-increment)
+email (String, Unic, Not-null)
+parola (String, Not-Null)
+nume (String, Not-Null)
+prenume (String, Not-Null)
+rol (Enum: 'student', 'profesor', Not-null)
+
+Relații:
+Un Profesor are mai multe Sesiuni
+Un Student are mai multe Cereri
+
+SesiuneInscriere
+id (PK, Auto-increment)
+titlu (Strig, Not-null)
+data_start (DateTime, Not-null)
+data_stop (DateTime, Not-null)
+numar_locuri_max (Integer, Not-null)
+profesorId (FK, referință la User.id)
+
+Relații:
+
+O Sesiune aparține unui Profesor
+O Sesiune are mai multe Cereri
+
+CerereDisertatie 
+id (PK, Auto-increment)
+status (Enum: 'trimisa', 'preliminar_aprobata', 'respinsa', 'fisier_incarcat', 'final_aprobata', 'fisier_respins')
+justificare_respingere (Text, Nullable)
+fisier_student_path (String, Nullable - calea către fișierul stocat pe server)
+fisier_profesor_path (String, Nullable)
+studentId (FK, referință la User.id)
+sesiuneId (FK, referință la SesiuneInscriere.id)
+
+Relații:
+
+O Cerere aparține unui Student
+O Cerere aparține unei Sesiuni
+
+3. API Endpoints (Interfața REST)
+Prefixul general pentru toate rutele este /api.
+
+Autentificare (/auth)
+POST /login - autentifică un utilizator (student sau profesor)
+GET /me - returnează datele utilizatorului curent logat
+Sesiuni (/sesiuni)
+POST / - creează o nouă sesiune de înscriere (profesor)
+GET / - returnează lista tuturor sesiunilor active ale tuturor profesorilor (student)
+GET /personale - returnează lista tuturor sesiunilor create de profesorul logat (profesor)
+PUT /:id - modifică o sesiune proprie (profesor)
+DELETE /:id – șterge o sesiune proprie
+
+Cereri (/cereri)
+POST / - aplică la o sesiune (creează o cerere nouă cu status trimisa) (student)
+GET /student - returnează toate cererile făcute de studentul logat (student)
+GET /profesor - returnează toate cererile primite la sesiunile profesorului logat (profesor)
+PUT /:id/actiune-preliminara - aprobă preliminar sau respinge o cerere (profesor)
+POST /:id/upload-student - încarcă fișierul pentru o cerere aprobată preliminar sau cu fișier respins (student)
+POST /:id/raspuns-profesor - aprobă final (încărcând un fișier) sau respinge fișierul studentului cu justificare (profesor)
+
+Fișiere (/fisiere)
+GET /:cerereId/student - descarcă fișierul încărcat de student pentru o cerere anume (profesor sau student)
+GET /:cerereId/profesor - descarcă fișierul de răspuns încărcat de profesor pentru o cerere anume (profesor sau student)

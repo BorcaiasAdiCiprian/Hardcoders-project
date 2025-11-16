@@ -1,0 +1,48 @@
+1. Creare și configurare
+Crearea și configurarea repository-ului Git.
+Inițializarea structurii de bază pentru părțile de backend și frontend
+Configurarea serverului de backend cu Express și a structurii de foldere 
+Configurarea aplicației frontend și a structurii de foldere 
+Alegerea și configurarea ORM-ului 
+Implementarea modelului bazei de date conform schemelor definite în ORM.
+Configurarea conexiunii la baza de date relațională.
+
+2. Backend
+Implementarea sistemului de Autentificare (/api/auth)
+Implementarea CRUD (Create, Read, Update, Delete) pentru Sesiuni (/api/sesiuni)
+Implementarea logicii de bază pentru Cereri (/api/cereri)
+Implementarea fluxului de aprobare a cererilor
+Implementarea gestionării fișierelor (/api/fisiere)
+
+3. Frontend
+Configurarea rutării client-side pentru a defini "paginile" aplicației 
+Implementarea componentelor de bază reutilizabile sau alegerea unei biblioteci UI 
+Crearea paginilor statice și a fluxului de autentificare (pagina de login, landing page)
+Implementarea unui sistem de gestiune a stării globale pentru a stoca starea de autentificare și datele utilizatorului
+
+Dezvoltarea Dashboard-ului de Student:
+Vizualizarea sesiunilor active
+Aplicarea la o sesiune
+Vizualizarea statusului propriilor cereri
+Formularul de upload fișier
+
+Dezvoltarea Dashboard-ului de Profesor:
+Formularul de creare/modificare sesiune.
+Vizualizarea sesiunilor proprii.
+Lista cererilor primite, cu opțiuni de filtrare/sortare.
+Aprobare/respingere cereri (cu justificare).
+Interfața pentru download fișier student și upload fișier răspuns.
+
+
+4. Integrare și testare
+Testarea completă a fluxurilor end-to-end 
+Gestionarea posibilelor erorilor și probleme
+Crearea documentației finale cu instrucțiuni de rulare
+
+5. Deployment
+Alegerea furnizorilor de cloud 
+Configurarea variabilelor de mediu în producție
+Deployment-ul bazei de date relaționale
+Deployment-ul aplicației backend 
+Deployment-ul aplicației frontend și conectarea ei la API-ul publicat
+Testarea finală a aplicației în mediul de producție

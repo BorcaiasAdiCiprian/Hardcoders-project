@@ -1,0 +1,1 @@
+Logica endpoint-urilor - ADI

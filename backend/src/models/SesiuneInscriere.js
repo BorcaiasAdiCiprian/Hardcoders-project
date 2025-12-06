@@ -1,7 +1,7 @@
 //Structura tabelului pentru sesiunile de inscrieri
 //sesiune creata de un profesor la care un student poate aplica
 
-const DataTypes = require('sequelize');
+const { DataTypes } = require('sequelize');
 const sequelize = require('../config//database');
 
 const SesiuneInscriere = sequelize.define('SesiuneInscriere', {

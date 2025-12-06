@@ -1,7 +1,7 @@
 //Structura tabelului pentru cererile de disertatie
 //legatura dintre un student si o sesiune
 
-const DataTypes = require('sequelize');
+const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
 const CerereDisertatie = sequelize.define('CerereDisertatie', {

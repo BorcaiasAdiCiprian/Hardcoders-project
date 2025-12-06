@@ -1,0 +1,660 @@
+{
+	"info": {
+		"_postman_id": "968ca151-f3e7-46ff-85ac-29ac06abbd38",
+		"name": "ValidariDisertatie",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30838856"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login cu date de profesor",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"profesor1@univ.ro\",\r\n    \"parola\": \"123456\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login cu date de student",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"student1@univ.ro\",\r\n    \"parola\": \"123456\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Sesiuni",
+			"item": [
+				{
+					"name": "Creare Sesiuni(Prof)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sIjoicHJvZmVzb3IiLCJpYXQiOjE3NjQ5MzU1MjEsImV4cCI6MTc2NTAyMTkyMX0.IJV47RFWwlVeGsyA5jEmJBH3lGlKm1mJ4DHefKj8jhM",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"titlu\": \"Licenta Adev 2025-2026\",\r\n    \"data_start\": \"2025-12-15\",\r\n    \"data_stop\": \"2026-06-15\",\r\n    \"numar_locuri_max\": 4\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/sesiuni",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"sesiuni"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Vezi Sesiuni(Stud)",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mywicm9sIjoic3R1ZGVudCIsImlhdCI6MTc2NDkzNTY5OCwiZXhwIjoxNzY1MDIyMDk4fQ.EzTF78l-H9_YKUnSJrdDpP-W0EEqROw4Geqn_Cpp1JE",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/sesiuni",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"sesiuni"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Modificare Sesiune(Prof)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sIjoicHJvZmVzb3IiLCJpYXQiOjE3NjQ5MzU1MjEsImV4cCI6MTc2NTAyMTkyMX0.IJV47RFWwlVeGsyA5jEmJBH3lGlKm1mJ4DHefKj8jhM",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"titlu\": \"Titlu Modificat\",\r\n    \"numar_locuri_max\": 10\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/sesiuni/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"sesiuni",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sterge Sesiune(Prof)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sIjoicHJvZmVzb3IiLCJpYXQiOjE3NjQ5MzU1MjEsImV4cCI6MTc2NTAyMTkyMX0.IJV47RFWwlVeGsyA5jEmJBH3lGlKm1mJ4DHefKj8jhM",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/sesiuni/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"sesiuni",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Cereri",
+			"item": [
+				{
+					"name": "Aplica La Sesiune(Stud)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mywicm9sIjoic3R1ZGVudCIsImlhdCI6MTc2NDkzNTY5OCwiZXhwIjoxNzY1MDIyMDk4fQ.EzTF78l-H9_YKUnSJrdDpP-W0EEqROw4Geqn_Cpp1JE",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"sesiuneId\": 2 \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/cereri",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"cereri"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Aprobare Cerere(Prof)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sIjoicHJvZmVzb3IiLCJpYXQiOjE3NjQ5MzU1MjEsImV4cCI6MTc2NTAyMTkyMX0.IJV47RFWwlVeGsyA5jEmJBH3lGlKm1mJ4DHefKj8jhM",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"actiune\": \"aproba\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/cereri/2/actiune-preliminara",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"cereri",
+								"2",
+								"actiune-preliminara"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Respingere Cerere(Prof)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sIjoicHJvZmVzb3IiLCJpYXQiOjE3NjQ5MzU1MjEsImV4cCI6MTc2NTAyMTkyMX0.IJV47RFWwlVeGsyA5jEmJBH3lGlKm1mJ4DHefKj8jhM",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"actiune\": \"respinge\",\r\n    \"justificare\": \"Media ta este prea mica frate.\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/cereri/2/actiune-preliminara",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"cereri",
+								"2",
+								"actiune-preliminara"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Incarca Fisier(Stud)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mywicm9sIjoic3R1ZGVudCIsImlhdCI6MTc2NDkzNTY5OCwiZXhwIjoxNzY1MDIyMDk4fQ.EzTF78l-H9_YKUnSJrdDpP-W0EEqROw4Geqn_Cpp1JE",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "fisier",
+									"type": "file",
+									"src": "/C:/Users/PC/Documents/Badge Special IT.pdf"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/cereri/2/upload-student",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"cereri",
+								"2",
+								"upload-student"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Aprobare Finala(Prof)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sIjoicHJvZmVzb3IiLCJpYXQiOjE3NjQ5MzU1MjEsImV4cCI6MTc2NTAyMTkyMX0.IJV47RFWwlVeGsyA5jEmJBH3lGlKm1mJ4DHefKj8jhM",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "actiune",
+									"value": "aproba_final",
+									"type": "text"
+								},
+								{
+									"key": "fisier",
+									"type": "file",
+									"src": "/C:/Users/PC/Documents/Badge Special IT.pdf"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/cereri/2/raspuns-profesor",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"cereri",
+								"2",
+								"raspuns-profesor"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Respingere Document(Prof)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sIjoicHJvZmVzb3IiLCJpYXQiOjE3NjQ5MzU1MjEsImV4cCI6MTc2NTAyMTkyMX0.IJV47RFWwlVeGsyA5jEmJBH3lGlKm1mJ4DHefKj8jhM",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "actiune",
+									"value": "respinge_fisier",
+									"type": "text"
+								},
+								{
+									"key": "justificare",
+									"value": "Mi-ai gresit numele!",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/cereri/2/raspuns-profesor",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"cereri",
+								"2",
+								"raspuns-profesor"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Fisiere",
+			"item": [
+				{
+					"name": "Descarcare Fisier(Prof sau Stud)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mywicm9sIjoic3R1ZGVudCIsImlhdCI6MTc2NDkzNTY5OCwiZXhwIjoxNzY1MDIyMDk4fQ.EzTF78l-H9_YKUnSJrdDpP-W0EEqROw4Geqn_Cpp1JE",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/fisiere/2/profesor",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"fisiere",
+								"2",
+								"profesor"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Listari",
+			"item": [
+				{
+					"name": "Verificare Tip Cont(Prof sau Stud)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mywicm9sIjoic3R1ZGVudCIsImlhdCI6MTc2NDkzNTY5OCwiZXhwIjoxNzY1MDIyMDk4fQ.EzTF78l-H9_YKUnSJrdDpP-W0EEqROw4Geqn_Cpp1JE",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/auth/me",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"auth",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sesiunile Profului Logat(Prof)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sIjoicHJvZmVzb3IiLCJpYXQiOjE3NjQ5MzU1MjEsImV4cCI6MTc2NTAyMTkyMX0.IJV47RFWwlVeGsyA5jEmJBH3lGlKm1mJ4DHefKj8jhM",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/sesiuni/personale",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"sesiuni",
+								"personale"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cererile Studentului Logat(Stud)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mywicm9sIjoic3R1ZGVudCIsImlhdCI6MTc2NDkzNTY5OCwiZXhwIjoxNzY1MDIyMDk4fQ.EzTF78l-H9_YKUnSJrdDpP-W0EEqROw4Geqn_Cpp1JE",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/cereri/student",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"cereri",
+								"student"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cererile Catre Proful Logat(Prof)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sIjoicHJvZmVzb3IiLCJpYXQiOjE3NjQ5MzU1MjEsImV4cCI6MTc2NTAyMTkyMX0.IJV47RFWwlVeGsyA5jEmJBH3lGlKm1mJ4DHefKj8jhM",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/cereri/profesor",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"cereri",
+								"profesor"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

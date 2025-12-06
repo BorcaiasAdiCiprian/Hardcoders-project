@@ -1,6 +1,6 @@
 //Importa modelele individuale
 //Defineste relatiile dintre tabele si exporta un obiect(db)
-
+const{ DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
 const User = require('./User');

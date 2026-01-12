@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from './api';
+import profesorStyles from './profesor';
 
 const DashboardProfesor = () => {
   const navigate = useNavigate();
   const numeProfesor = localStorage.getItem('nume') || 'Profesor';
-  
-  //  STATE 
+
   const [cereri, setCereri] = useState([]);
   const [sesiuni, setSesiuni] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showHistory, setShowHistory] = useState(false); // Toggle: false = Active, true = Istoric
-  const [selectedFiles, setSelectedFiles] = useState({}); 
+  const [showHistory, setShowHistory] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState({});
   const [actionLoading, setActionLoading] = useState(false);
-  
+
   const [isCreating, setIsCreating] = useState(false);
   const [newSesiune, setNewSesiune] = useState({
     titlu: '',
@@ -22,7 +22,6 @@ const DashboardProfesor = () => {
     numar_locuri_max: 10
   });
 
-  //  FETCH DATA 
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -51,13 +50,12 @@ const DashboardProfesor = () => {
     } finally {
       setLoading(false);
     }
-  };    
+  };
 
   useEffect(() => {
     fetchData();
   }, []);
 
-  //HANDLERS 
   const handleCreateSesiune = async (e) => {
     e.preventDefault();
     setActionLoading(true);
@@ -68,7 +66,20 @@ const DashboardProfesor = () => {
       setNewSesiune({ titlu: '', data_start: '', data_stop: '', numar_locuri_max: 10 });
       fetchData();
     } catch (err) {
-      alert("Eroare la creare");
+      const data = err.response?.data;
+      if (data) {
+        if (data.errors && Array.isArray(data.errors)) {
+          alert(data.errors.join('\n'));
+        } else if (data.message) {
+          alert(data.message);
+        } else if (typeof data === 'string') {
+          alert(data);
+        } else {
+          alert("Eroare la creare");
+        }
+      } else {
+        alert("Eroare la creare");
+      }
     } finally {
       setActionLoading(false);
     }
@@ -80,7 +91,8 @@ const DashboardProfesor = () => {
       await api.delete(`/sesiuni/${id}`);
       fetchData();
     } catch (err) {
-      alert("Nu se poate șterge o sesiune cu cereri active.");
+      const msg = err.response?.data?.message || "Nu se poate șterge o sesiune cu cereri active.";
+      alert(msg);
     }
   };
 
@@ -121,10 +133,17 @@ const DashboardProfesor = () => {
   const handleDownload = async (cerereId, tip) => {
     try {
       const res = await api.get(`/fisiere/${cerereId}/${tip}`, { responseType: 'blob' });
+      //extensie docx sau pdf
+      const contentType = res.headers['content-type'] || '';
+      let extension = 'pdf';
+      if (contentType.includes('wordprocessingml') || contentType.includes('msword')) {
+        extension = 'docx';
+      }
+
       const url = window.URL.createObjectURL(new Blob([res.data]));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `document_${tip}.pdf`);
+      link.setAttribute('download', `document_${tip}.${extension}`);
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -133,178 +152,281 @@ const DashboardProfesor = () => {
     }
   };
 
-  //  LOGICA FILTRARE
-  const cereriAfisate = !showHistory 
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate('/');
+  };
+
+  const cereriAfisate = !showHistory
     ? cereri.filter(c => ['trimisa', 'preliminar_aprobata', 'fisier_incarcat', 'fisier_respins'].includes(c.status))
     : cereri.filter(c => ['final_aprobata', 'respinsa'].includes(c.status));
 
-  // MODAL CREARE
-if (isCreating) {
-  return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <div className="bg-white p-8 rounded-xl shadow-2xl max-w-md w-full border-t-4 border-indigo-600">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">Sesiune Nouă</h2>
-        <form onSubmit={handleCreateSesiune} className="space-y-4">
-          <div>
-            <label className="text-sm font-medium">Titlu Proiect</label>
-            <input required className="w-full border p-2 rounded" type="text"
-              value={newSesiune.titlu} onChange={e => setNewSesiune({...newSesiune, titlu: e.target.value})} />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <input required className="border p-2 rounded" type="date"
-              value={newSesiune.data_start} onChange={e => setNewSesiune({...newSesiune, data_start: e.target.value})} />
-            <input required className="border p-2 rounded" type="date"
-              value={newSesiune.data_stop} onChange={e => setNewSesiune({...newSesiune, data_stop: e.target.value})} />
-          </div>
-          <div>
-            <label className="text-sm font-medium">Capacitate Studenți</label>
-            <input required className="w-full border p-2 rounded mt-1" type="number"
-                value={newSesiune.numar_locuri_max} onChange={e => setNewSesiune({...newSesiune, numar_locuri_max: e.target.value})} />
-          </div>
+  const styles = profesorStyles;
 
-          <div className="flex justify-between items-center pt-6">
-            <button 
-              type="button" 
-              onClick={() => setIsCreating(false)} 
-              className="btn-small btn-danger"
-              style={{ minWidth: '100px' }}
-            >
-              Anulează
-            </button>
-            
-            <button 
-              type="submit" 
-              disabled={actionLoading}
-              className="btn-small btn-success"
-              style={{ minWidth: '100px' }}
-            >
-              {actionLoading ? "Se salvează..." : "Creează"}
-            </button>
-          </div>
-        </form>
+
+  if (isCreating) {
+    return (
+      <div style={styles.modalOverlay}>
+        <div style={styles.modalCard}>
+          <h2 style={styles.modalTitle}>Sesiune Nouă</h2>
+          <form onSubmit={handleCreateSesiune} style={styles.form}>
+            <div style={styles.inputGroup}>
+              <label style={styles.label}>Titlu Proiect</label>
+              <input
+                required
+                style={styles.input}
+                type="text"
+                placeholder="Introduceți titlul proiectului"
+                value={newSesiune.titlu}
+                onChange={e => setNewSesiune({ ...newSesiune, titlu: e.target.value })}
+              />
+            </div>
+
+            <div style={styles.dateGrid}>
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>Data Start</label>
+                <input
+                  required
+                  style={styles.input}
+                  type="date"
+                  value={newSesiune.data_start}
+                  onChange={e => setNewSesiune({ ...newSesiune, data_start: e.target.value })}
+                />
+              </div>
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>Data Stop</label>
+                <input
+                  required
+                  style={styles.input}
+                  type="date"
+                  value={newSesiune.data_stop}
+                  onChange={e => setNewSesiune({ ...newSesiune, data_stop: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <div style={styles.inputGroup}>
+              <label style={styles.label}>Capacitate Studenți</label>
+              <input
+                required
+                style={styles.input}
+                type="number"
+                min="1"
+                value={newSesiune.numar_locuri_max}
+                onChange={e => setNewSesiune({ ...newSesiune, numar_locuri_max: e.target.value })}
+              />
+            </div>
+
+            <div style={styles.modalButtons}>
+              <button
+                type="button"
+                onClick={() => setIsCreating(false)}
+                style={{ ...styles.button, ...styles.buttonDanger, minWidth: '120px' }}
+              >
+                Anulează
+              </button>
+
+              <button
+                type="submit"
+                disabled={actionLoading}
+                style={{
+                  ...styles.button,
+                  ...styles.buttonSuccess,
+                  minWidth: '120px',
+                  ...(actionLoading && { opacity: 0.5, cursor: 'not-allowed' })
+                }}
+              >
+                {actionLoading ? "Se salvează..." : "Creează"}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
-        
-        <header className="flex justify-between items-center bg-white p-6 rounded-lg shadow-sm mb-8 border-b-2 border-indigo-500">
-          <div>
-            <h1 className="text-2xl font-black text-gray-800 uppercase">Panou Profesor</h1>
-            <p className="text-indigo-600 font-medium">Profesor {numeProfesor}</p>
+    <div style={styles.container}>
+      <div style={styles.maxWidth}>
+        <div style={styles.header}>
+          <div style={styles.headerInfo}>
+            <h1 style={styles.title}>Panou Profesor</h1>
+            <p style={styles.subtitle}>Profesor {numeProfesor}</p>
           </div>
-          <div className="flex gap-4">
-            <button onClick={() => setIsCreating(true)} className="btn-small btn-success" style={{borderRadius: '999px', padding: '10px 20px'}}>
+          <div style={styles.buttonContainer}>
+            <button
+              onClick={() => setIsCreating(true)}
+              style={styles.createButton}
+            >
               + Sesiune Nouă
             </button>
-            <button onClick={() => { localStorage.clear(); navigate('/'); }} className="btn-small btn-danger">
-              Deconectare
-            </button>
           </div>
-        </header>
+        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          
-          <section className="lg:col-span-3 space-y-6">
-            
-            
-            <div className="flex justify-between items-center border-b pb-4 mb-6">
-              <h2 className="text-xl font-bold text-blue-900">
-                {showHistory ? "📜 Istoric Cereri" : "⚡ Cereri în Curs"}
+        <div style={styles.mainGrid}>
+          <section style={styles.mainSection}>
+            <div style={styles.sectionHeader}>
+              <h2 style={styles.sectionTitle}>
+                {showHistory ? "Istoric Cereri" : "Cereri în Curs"}
               </h2>
 
-              <button 
+              <button
                 onClick={() => setShowHistory(!showHistory)}
-                className={`btn-small flex items-center gap-2 transition-all duration-300 ${
-                  showHistory ? "bg-indigo-600 text-white shadow-inner" : "bg-gray-200 text-gray-700"
-                }`}
-                style={{ borderRadius: '8px', minWidth: '180px' }}
+                style={{
+                  ...styles.toggleButton,
+                  ...(showHistory ? styles.toggleButtonActive : styles.toggleButtonInactive)
+                }}
               >
-                {showHistory ? "⬅️ Vezi Active" : "📜 Vezi Istoric"}
+                {showHistory ? "Vezi Active" : "Vezi Istoric"}
               </button>
             </div>
 
-            <div className="flex flex-col gap-4">
+            <div style={styles.cereriContainer}>
               {cereriAfisate.length > 0 ? (
                 cereriAfisate.map(c => (
-                  <div key={c.id} className="card card-row">
-                    <div style={{ minWidth: 'fit-content' }}>
-                      <h3 className="font-bold text-gray-800 text-lg">{c.student?.nume} {c.student?.prenume}</h3>
-                      <p className="text-sm text-gray-500">{c.student?.email}</p>
-                      <span className="badge bg-indigo-50 text-indigo-700 mt-2 inline-block border border-indigo-100">
+                  <div key={c.id} style={styles.cerereCard}>
+                    <div style={styles.cerereInfo}>
+                      <h3 style={styles.cerereTitle}>
+                        {c.student?.nume} {c.student?.prenume}
+                      </h3>
+                      <p style={styles.cerereEmail}>{c.student?.email}</p>
+                      <span style={styles.badge}>
                         {c.status.replace('_', ' ')}
                       </span>
                     </div>
 
-                    <div className="actions-container">
+                    <div style={styles.actionsContainer}>
                       {c.fisier_student_path && (
-                        <button onClick={() => handleDownload(c.id, 'student')} className="btn-small btn-secondary">
-                          📄 Cerere Student
+                        <button
+                          onClick={() => handleDownload(c.id, 'student')}
+                          style={{ ...styles.button, ...styles.buttonSecondary }}
+                        >
+                          Cerere Student
                         </button>
                       )}
-                      
+
                       {c.status === 'trimisa' && (
                         <>
-                          <button onClick={() => handleActiuneCerere(c.id, 'aproba')} className="btn-small btn-success">Aprobă</button>
-                          <button onClick={() => handleActiuneCerere(c.id, 'respinge')} className="btn-small btn-danger">Respinge</button>
+                          <button
+                            onClick={() => handleActiuneCerere(c.id, 'aproba')}
+                            style={{ ...styles.button, ...styles.buttonSuccess }}
+                          >
+                            Aprobă
+                          </button>
+                          <button
+                            onClick={() => handleActiuneCerere(c.id, 'respinge')}
+                            style={{ ...styles.button, ...styles.buttonDanger }}
+                          >
+                            Respinge
+                          </button>
                         </>
                       )}
 
                       {['preliminar_aprobata', 'fisier_incarcat', 'fisier_respins'].includes(c.status) && (
-                        <div className="flex items-center gap-2 bg-indigo-50 p-2 rounded-lg border border-dashed border-indigo-200">
-                          <input type="file" onChange={(e) => setSelectedFiles({...selectedFiles, [c.id]: e.target.files[0]})} className="text-[10px] w-32" />
-                          <button onClick={() => handleUploadFinal(c.id)} className="btn-small btn-success">Finalizează</button>
+                        <div style={styles.uploadContainer}>
+                          <input
+                            type="file"
+                            onChange={(e) => setSelectedFiles({ ...selectedFiles, [c.id]: e.target.files[0] })}
+                            style={styles.fileInput}
+                          />
+                          <button
+                            onClick={() => handleUploadFinal(c.id)}
+                            style={{ ...styles.button, ...styles.buttonSuccess }}
+                          >
+                            Finalizează
+                          </button>
                         </div>
                       )}
 
                       {c.status === 'final_aprobata' && (
-                        <button onClick={() => handleDownload(c.id, 'profesor')} className="btn-small btn-success">
-                          ✅ DOC FINAL
+                        <button
+                          onClick={() => handleDownload(c.id, 'profesor')}
+                          style={{ ...styles.button, ...styles.buttonSuccess }}
+                        >
+                          DOC FINAL
                         </button>
                       )}
                     </div>
                   </div>
                 ))
               ) : (
-                <div className="p-10 text-center bg-white rounded-xl border border-dashed border-gray-300">
-                  <p className="text-gray-400 italic">Nu există cereri de afișat în această secțiune.</p>
+                <div style={styles.emptyState}>
+                  <p style={styles.emptyText}>Nu există cereri de afișat în această secțiune.</p>
                 </div>
               )}
             </div>
           </section>
+        </div>
 
-          {/*de verificat aici de ce nu afiseaza sesiunile profesorului*/}
-          <aside className="lg:col-span-1">
-            <div className="bg-white p-5 rounded-xl shadow-sm border-t-4 border-indigo-500 sticky top-6">
-              <h2 className="font-black text-gray-800 mb-6 uppercase text-sm">Sesiunile Mele</h2>
-              <div className="space-y-6">
-                {sesiuni.map(s => (
-                  <div key={s.id} className="border-b pb-4 last:border-0">
-                    <div className="flex justify-between items-start">
-                      <h4 className="font-bold text-gray-800 text-sm leading-tight">{s.titlu}</h4>
-                      <button onClick={() => handleDeleteSesiune(s.id)} className="text-gray-300 hover:text-red-500">✕</button>
-                    </div>
-                    <div className="w-full bg-gray-100 h-2 rounded-full mt-3 overflow-hidden">
-                      <div 
-                        className={`h-full transition-all duration-500 ${s.locuri_ramase <= 0 ? 'bg-red-500' : 'bg-indigo-500'}`} 
-                        style={{ width: `${(s.locuri_ocupate / s.numar_locuri_max) * 100}%` }}
-                      />
-                    </div>
-                    <div className="flex justify-between text-[10px] mt-1 font-bold text-gray-500 uppercase">
-                      <span>{s.locuri_ocupate} / {s.numar_locuri_max} Locuri</span>
-                      <span className={s.locuri_ramase <= 0 ? 'text-red-500' : 'text-green-600'}>
-                        {s.locuri_ramase} libere
-                      </span>
-                    </div>
+        <div style={styles.sesiuniSection}>
+          <h2 style={styles.sectionTitle}>Sesiunile Mele</h2>
+
+          <div style={styles.sesiuniGrid}>
+            {sesiuni.map((s) => (
+              <div
+                key={s.id}
+                style={styles.sesiuneCard}
+              >
+                <div style={styles.sesiuneGradient}></div>
+                <div style={styles.sesiuneContent}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+                    <h3 style={styles.sesiuneTitle}>{s.titlu}</h3>
+                    <button
+                      onClick={() => handleDeleteSesiune(s.id)}
+                      disabled={s.locuri_ocupate > 0}
+                      style={{
+                        ...styles.deleteButton,
+                        ...(s.locuri_ocupate > 0 && {
+                          opacity: 0.5,
+                          cursor: 'not-allowed',
+                          background: 'rgba(255, 255, 255, 0.1)',
+                          color: 'rgba(255, 255, 255, 0.4)',
+                          border: '1px solid rgba(255, 255, 255, 0.1)'
+                        })
+                      }}
+                      title={s.locuri_ocupate > 0 ? "Această sesiune are cereri aprobate și nu poate fi ștearsă" : "Șterge sesiunea"}
+                    >
+                      Șterge
+                    </button>
                   </div>
-                ))}
-              </div>
-            </div>
-          </aside>
 
+                  <div style={styles.progressBar}>
+                    <div
+                      style={{
+                        ...styles.progressFill,
+                        width: `${(s.locuri_ocupate / s.numar_locuri_max) * 100}%`,
+                        background: s.locuri_ramase <= 0
+                          ? 'linear-gradient(90deg, #ef4444 0%, #dc2626 100%)'
+                          : 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)'
+                      }}
+                    />
+                  </div>
+
+                  <div style={styles.progressInfo}>
+                    <span style={styles.progressLabel}>
+                      {s.locuri_ocupate} / {s.numar_locuri_max} Locuri
+                    </span>
+                    <span style={{
+                      color: s.locuri_ramase <= 0 ? '#ef4444' : '#10b981',
+                      fontWeight: '700'
+                    }}>
+                      {s.locuri_ramase} libere
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+
+        <div style={styles.footerContainer}>
+          <button
+            onClick={handleLogout}
+            style={styles.logoutButton}
+          >
+            Deconectare
+          </button>
         </div>
       </div>
     </div>

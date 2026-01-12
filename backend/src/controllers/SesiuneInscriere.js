@@ -1,11 +1,12 @@
 const { SesiuneInscriere, User } = require('../models/index');
 const { Op } = require('sequelize');
+const { CerereDisertatie } = require('../models/index');
 
 const sesiuneInscriereController = {
     createSesiune: async (req, res) => {
         try {
             let vectorErori = [];
-            const profesorId = req.user.id; 
+            const profesorId = req.user.id;
 
             const sesiuneNoua = {
                 titlu: req.body.titlu,
@@ -21,6 +22,9 @@ const sesiuneInscriereController = {
 
             const start = new Date(sesiuneNoua.data_start);
             const stop = new Date(sesiuneNoua.data_stop);
+            // Setam ora de final la sfarsitul zilei (23:59:59) pentru a include toata ziua curenta
+            stop.setHours(23, 59, 59, 999);
+            sesiuneNoua.data_stop = stop;
 
             if (start >= stop) {
                 vectorErori.push("Data de stop trebuie sa fie după data de start");
@@ -47,7 +51,7 @@ const sesiuneInscriereController = {
 
             if (suprapunere) {
                 return res.status(409).json(
-                { message: "O sesiune se suprapune deja cu acest interval orar." });
+                    { message: "O sesiune se suprapune deja cu acest interval orar." });
             }
 
             const newSesiune = await SesiuneInscriere.create(sesiuneNoua);
@@ -78,7 +82,7 @@ const sesiuneInscriereController = {
         }
     },
 
-   getPersonale: async (req, res) => {
+    getPersonale: async (req, res) => {
         try {
             // 1. Găsim sesiunile profesorului
             const sesiuni = await SesiuneInscriere.findAll({
@@ -123,18 +127,29 @@ const sesiuneInscriereController = {
                 return res.status(404).json("Sesiunea nu a fost gasita/Nu aveti dreptul sa o stergeti");
             }
 
+            const cereriAprobate = await CerereDisertatie.count({
+                where: {
+                    sesiuneId: idSesiune,
+                    status: ['preliminar_aprobata', 'fisier_incarcat', 'fisier_respins', 'final_aprobata']
+                }
+            });
+
+            if (cereriAprobate > 0) {
+                return res.status(400).json({ message: "Nu puteți șterge o sesiune care are cereri aprobate (parțial sau final)." });
+            }
+
             await sesiune.destroy();
             res.status(200).json("Sesiune stearsa cu succes!");
         } catch (error) {
             res.status(500).json("Server Error");
         }
     },
-    
+
     updateSesiune: async (req, res) => {
         try {
             const idSesiune = req.params.id;
             let vectorErori = [];
-            
+
             let sesiune = await SesiuneInscriere.findOne({
                 where: { id: idSesiune, profesorId: req.user.id }
             });
@@ -143,19 +158,19 @@ const sesiuneInscriereController = {
                 return res.status(404).json("Sesiunea nu exista");
             }
 
-            if(req.body.data_start && req.body.data_stop) {
-                if(new Date(req.body.data_start) >= new Date(req.body.data_stop)) {
+            if (req.body.data_start && req.body.data_stop) {
+                if (new Date(req.body.data_start) >= new Date(req.body.data_stop)) {
                     vectorErori.push("Data start trebuie sa fie inainte de data stop");
                 }
             }
 
-            if(vectorErori.length > 0) {
-                 return res.status(400).json({ errors: vectorErori });
+            if (vectorErori.length > 0) {
+                return res.status(400).json({ errors: vectorErori });
             }
             await sesiune.update(req.body);
             res.status(200).json(sesiune);
 
-        } catch(error) {
+        } catch (error) {
             res.status(500).json("Server Error");
         }
     }

@@ -99,7 +99,29 @@ Aceste rute vor fi folosite pentru a popula dashboard-ul din Frontend. (TO DO pe
 * `GET /cereri/profesor` - Inbox-ul profesorului cu cererile primite. Testul se numește **Cererile Catre Proful Logat(Prof)**.
 
 ---
+💻 Cum pornești Frontend-ul (Ghid pentru interfață)
+După ce te-ai asigurat că serverul de backend este pornit (vezi instrucțiunile de mai sus), urmează acești pași pentru a lansa interfața utilizatorului:
 
+Deschide un terminal nou (nu îl închide pe cel de backend).
+
+Navighează în folderul frontend:
+
+Bash
+
+cd frontend
+Instalează dependențele (doar la prima utilizare):
+
+Bash
+
+npm install
+Pornește aplicația în modul de dezvoltare:
+
+Bash
+
+npm run dev
+Accesează interfața: După rularea comenzii, terminalul îți va afișa un link (de regulă http://localhost:5173/). Copiază link-ul în browser pentru a vedea aplicația.
+
+[!TIP] Important: Asigură-te că backend-ul rulează pe portul 3000 în paralel, altfel aplicația nu va putea prelua datele sau efectua logarea.
 ### 📂 Ghid Structură Backend
 
 * `src/config/` - Configurarea DB și configurarea Multer (DONE).

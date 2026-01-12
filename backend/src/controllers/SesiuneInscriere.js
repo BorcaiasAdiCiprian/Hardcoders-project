@@ -78,13 +78,36 @@ const sesiuneInscriereController = {
         }
     },
 
-    getPersonale: async (req, res) => {
+   getPersonale: async (req, res) => {
         try {
+            // 1. Găsim sesiunile profesorului
             const sesiuni = await SesiuneInscriere.findAll({
                 where: { profesorId: req.user.id }
             });
-            res.status(200).json(sesiuni);
+
+            // 2. Pentru fiecare sesiune, numărăm cererile acceptate
+            // Folosim Promise.all pentru a aștepta toate numărătorile
+            const sesiuniCuLocuri = await Promise.all(sesiuni.map(async (sesiune) => {
+                const locuriOcupate = await CerereDisertatie.count({
+                    where: {
+                        sesiuneId: sesiune.id,
+                        // Numărăm doar cererile active (aprobate sau în curs de finalizare)
+                        // EXCLUDEM: 'trimisa', 'respinsa', 'fisier_respins' (depinde de logica ta, de obicei 'trimisa' nu ocupă loc încă)
+                        status: ['preliminar_aprobata', 'fisier_incarcat', 'final_aprobata']
+                    }
+                });
+
+                // Returnăm datele sesiunii + calculul locurilor
+                return {
+                    ...sesiune.toJSON(), // Convertim instanța Sequelize în obiect simplu
+                    locuri_ocupate: locuriOcupate,
+                    locuri_ramase: sesiune.numar_locuri_max - locuriOcupate
+                };
+            }));
+
+            res.status(200).json(sesiuniCuLocuri);
         } catch (error) {
+            console.error(error);
             res.status(500).json("Server Error");
         }
     },
